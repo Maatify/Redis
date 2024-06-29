@@ -78,6 +78,18 @@ class RedisHandler
         return $this->redis->rename($this->redis_website_prefix . $old_key, $new_key);
     }
 
+    public function SetArrayAsJson(string $key, array $array)
+    {
+        return $this->redis->set($this->redis_website_prefix . $key, json_encode($array));
+
+    }
+
+    public function GetArrayAsJson(string $key)
+    {
+        $result_json = $this->redis->get($this->redis_website_prefix . $key);
+        return json_decode($result_json, true);
+    }
+
     /**
      * use as MultipleGet(['key_1', 'key_2', 'key_3'])
      * return should be
@@ -99,11 +111,6 @@ Array
         return $this->redis->mget($getting_keys);
     }
 
-    public function ArrayPush(string $key, array $array)
-    {
-        return $this->redis->rpush($this->redis_website_prefix . $key, $array);
-    }
-
     public function SetSerializeArray(string $key, array $array): void
     {
         // Serialize the array
@@ -113,13 +120,22 @@ Array
         $this->Set($key, $serializedArray);
     }
 
-    public function GetSerializeArray(string $key)
+    public function GetSerializedArray(string $key)
     {
         // Retrieve the serialized array from Redis
         $retrievedArray = $this->Get($key);
 
         // UnSerialize the array
         return unserialize($retrievedArray);
+    }
+
+
+
+    public function ListPush(string $key, array $array): void
+    {
+        foreach ($array as $value) {
+            $this->redis->rpush($this->redis_website_prefix . $key, $value);
+        }
     }
 
     public function ListRange(string $key, int $start = 0, int $end = -1)
