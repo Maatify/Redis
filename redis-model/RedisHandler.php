@@ -73,7 +73,12 @@ class RedisHandler
         return $this->redis->unlink($delete_keys);
     }
 
-    /*
+    public function RenameKey(string $old_key, string $new_key)
+    {
+        return $this->redis->rename($this->redis_website_prefix . $old_key, $new_key);
+    }
+
+    /**
      * use as MultipleGet(['key_1', 'key_2', 'key_3'])
      * return should be
      *
@@ -92,6 +97,46 @@ Array
             $getting_keys[] = $this->redis_website_prefix . $key;
         }
         return $this->redis->mget($getting_keys);
+    }
+
+    public function ArrayPush(string $key, array $array)
+    {
+        return $this->redis->rpush($this->redis_website_prefix . $key, $array);
+    }
+
+    public function SetSerializeArray(string $key, array $array): void
+    {
+        // Serialize the array
+        $serializedArray = serialize($array);
+
+        // Store the serialized array in Redis with an expiration time of 60 seconds
+        $this->Set($key, $serializedArray);
+    }
+
+    public function GetSerializeArray(string $key)
+    {
+        // Retrieve the serialized array from Redis
+        $retrievedArray = $this->Get($key);
+
+        // UnSerialize the array
+        return unserialize($retrievedArray);
+    }
+
+    public function ListRange(string $key, int $start = 0, int $end = -1)
+    {
+        return $this->redis->lrange($this->redis_website_prefix . $key, $start, $end);
+    }
+
+    public function ListLength(string $key)
+    {
+        // Get the length of the list
+        return $this->redis->lLen($this->redis_website_prefix . $key);
+    }
+
+    public function ListByIndex(string $key, int $index)
+    {
+        return $this->redis->lIndex($this->redis_website_prefix . $key, $index);
+        
     }
 
 
