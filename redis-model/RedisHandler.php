@@ -25,6 +25,9 @@ class RedisHandler
 
     protected Redis $redis;
 
+    /**
+     * @throws RedisException
+     */
     public function __construct(string $redis_host, int $redis_port, string $redis_password, int $redis_database,int $redis_expiry, string $redis_website_prefix)
     {
         $this->redis_website_prefix = $redis_website_prefix;
@@ -44,27 +47,42 @@ class RedisHandler
         return $this->redis;
     }
 
+    /**
+     * @throws RedisException
+     */
     public function Set(string $key, $value): void
     {
         $this->redis->set($this->redis_website_prefix . $key, $value, ['ex' => $this->redis_expiry]);
     }
 
+    /**
+     * @throws RedisException
+     */
     public function Get(string $key)
     {
         return $this->redis->get($this->redis_website_prefix . $key);
     }
 
-    public function TTL(string $key)
+    /**
+     * @throws RedisException
+     */
+    public function TTL(string $key): bool|int|Redis
     {
         return $this->redis->ttl($this->redis_website_prefix . $key);
     }
 
-    public function Clear()
+    /**
+     * @throws RedisException
+     */
+    public function Clear(): bool|Redis
     {
         return $this->redis->flushAll();
     }
 
-    public function Delete(array $keys)
+    /**
+     * @throws RedisException
+     */
+    public function Delete(array $keys): bool|int|Redis
     {
         $delete_keys = array();
         foreach ($keys as $key) {
@@ -73,17 +91,26 @@ class RedisHandler
         return $this->redis->unlink($delete_keys);
     }
 
-    public function RenameKey(string $old_key, string $new_key)
+    /**
+     * @throws RedisException
+     */
+    public function RenameKey(string $old_key, string $new_key): bool|Redis
     {
         return $this->redis->rename($this->redis_website_prefix . $old_key, $new_key);
     }
 
-    public function SetArrayAsJson(string $key, array $array)
+    /**
+     * @throws RedisException
+     */
+    public function SetArrayAsJson(string $key, array $array): bool|Redis
     {
         return $this->redis->set($this->redis_website_prefix . $key, json_encode($array));
 
     }
 
+    /**
+     * @throws RedisException
+     */
     public function GetArrayAsJson(string $key)
     {
         $result_json = $this->redis->get($this->redis_website_prefix . $key);
@@ -94,15 +121,16 @@ class RedisHandler
      * use as MultipleGet(['key_1', 'key_2', 'key_3'])
      * return should be
      *
-Array
-(
-    [0] => value1
-    [1] => value2
-    [2] => value3
-)
-
-     * */
-    public function MultipleGet(array $keys)
+     * Array
+     * (
+     * [0] => value1
+     * [1] => value2
+     * [2] => value3
+     * )
+     *
+     * @throws RedisException
+     */
+    public function MultipleGet(array $keys): array|bool|Redis
     {
         $getting_keys = [];
         foreach ($keys as $key) {
@@ -111,6 +139,9 @@ Array
         return $this->redis->mget($getting_keys);
     }
 
+    /**
+     * @throws RedisException
+     */
     public function SetSerializeArray(string $key, array $array): void
     {
         // Serialize the array
@@ -120,6 +151,9 @@ Array
         $this->Set($key, $serializedArray);
     }
 
+    /**
+     * @throws RedisException
+     */
     public function GetSerializedArray(string $key)
     {
         // Retrieve the serialized array from Redis
@@ -130,7 +164,9 @@ Array
     }
 
 
-
+    /**
+     * @throws RedisException
+     */
     public function ListPush(string $key, array $array): void
     {
         foreach ($array as $value) {
@@ -138,50 +174,77 @@ Array
         }
     }
 
-    public function ListRange(string $key, int $start = 0, int $end = -1)
+    /**
+     * @throws RedisException
+     */
+    public function ListRange(string $key, int $start = 0, int $end = -1): array|Redis
     {
         return $this->redis->lrange($this->redis_website_prefix . $key, $start, $end);
     }
 
-    public function ListLength(string $key)
+    /**
+     * @throws RedisException
+     */
+    public function ListLength(string $key): bool|int|Redis
     {
         // Get the length of the list
         return $this->redis->lLen($this->redis_website_prefix . $key);
     }
 
+    /**
+     * @throws RedisException
+     */
     public function ListByIndex(string $key, int $index)
     {
         return $this->redis->lIndex($this->redis_website_prefix . $key, $index);
         
     }
 
-    public function IsKeyExist(string $key)
+    /**
+     * @throws RedisException
+     */
+    public function IsKeyExist(string $key): bool|int|Redis
     {
         return $this->redis->exists($this->redis_website_prefix . $key);
     }
 
-    public function Info()
+    /**
+     * @throws RedisException
+     */
+    public function Info(): bool|array|Redis
     {
         return $this->redis->info();
     }
 
+    /**
+     * @throws RedisException
+     */
     public function UsedMemorySize()
     {
         $info = $this->Info();
         return $info['used_memory'];
     }
 
+    /**
+     * @throws RedisException
+     */
     public function MasterLinkStatus()
     {
         $info = $this->Info();
         return $info['master_link_status'];
     }
 
-    public function AllKeys()
+    /**
+     * @throws RedisException
+     */
+    public function AllKeys(): array|bool|Redis
     {
         return $this->redis->keys('*');
     }
 
+    /**
+     * @throws RedisException
+     */
     public function AllKeysAndValues(): array
     {
         $result = array();
@@ -192,6 +255,40 @@ Array
             }
         }
         return $result;
+    }
+
+    /**
+     * @throws RedisException
+     */
+    public function hSet(string $key, string $h_key_name, array $array): bool|int|Redis
+    {
+        return $this->redis->hSet($this->redis_website_prefix . $key,
+            $h_key_name,
+            json_encode($array, JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * @throws RedisException
+     */
+    public function hGet(string $key, string $h_key_name)
+    {
+        return $this->redis->hGet($this->redis_website_prefix . $key, $h_key_name);
+    }
+
+    /**
+     * @throws RedisException
+     */
+    public function hGetAll(string $key): array|bool|Redis
+    {
+        return $this->redis->hGetAll($this->redis_website_prefix . $key);
+    }
+
+    /**
+     * @throws RedisException
+     */
+    public function hDel(string $key, string $h_key_name): bool|int|Redis
+    {
+        return $this->redis->hDel($this->redis_website_prefix . $key, $h_key_name);
     }
 
 }
