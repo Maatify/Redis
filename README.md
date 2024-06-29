@@ -7,7 +7,7 @@
 [pkg]: <https://packagist.org/packages/maatify/redis>
 [pkg-stats]: <https://packagist.org/packages/maatify/redis/stats>
 
-# DB-Model
+# Redis
 
 maatify.dev Redis handler, known by our team
 
