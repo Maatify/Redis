@@ -155,5 +155,43 @@ Array
         
     }
 
+    public function IsKeyExist(string $key)
+    {
+        return $this->redis->exists($this->redis_website_prefix . $key);
+    }
+
+    public function Info()
+    {
+        return $this->redis->info();
+    }
+
+    public function UsedMemorySize()
+    {
+        $info = $this->Info();
+        return $info['used_memory'];
+    }
+
+    public function MasterLinkStatus()
+    {
+        $info = $this->Info();
+        return $info['master_link_status'];
+    }
+
+    public function AllKeys()
+    {
+        return $this->redis->keys('*');
+    }
+
+    public function AllKeysAndValues(): array
+    {
+        $result = array();
+        $keys = $this->AllKeys();
+        if(!empty($keys)) {
+            foreach ($keys as $key) {
+                $result[$key] = $this->redis->get($key);
+            }
+        }
+        return $result;
+    }
 
 }
