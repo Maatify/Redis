@@ -59,5 +59,40 @@ class RedisHandler
         return $this->redis->ttl($this->redis_website_prefix . $key);
     }
 
+    public function Clear()
+    {
+        return $this->redis->flushAll();
+    }
+
+    public function Delete($keys)
+    {
+        $delete_keys = array();
+        foreach ($keys as $key) {
+            $delete_keys[] = $this->redis_website_prefix . $key;
+        }
+        return $this->redis->unlink($delete_keys);
+    }
+
+    /*
+     * use as MultipleGet(['key_1', 'key_2', 'key_3'])
+     * return should be
+     *
+Array
+(
+    [0] => value1
+    [1] => value2
+    [2] => value3
+)
+
+     * */
+    public function MultipleGet(array $keys)
+    {
+        $getting_keys = [];
+        foreach ($keys as $key) {
+            $getting_keys[] = $this->redis_website_prefix . $key;
+        }
+        return $this->redis->mget($getting_keys);
+    }
+
 
 }
