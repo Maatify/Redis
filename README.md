@@ -9,7 +9,7 @@
 
 # DB-Model
 
-maatify.dev MySql Database PDO Model handler, known by our team
+maatify.dev Redis handler, known by our team
 
 # Installation
 
