@@ -291,4 +291,12 @@ class RedisHandler
         return $this->redis->hDel($this->redis_website_prefix . $key, $h_key_name);
     }
 
+    /**
+     * @throws RedisException
+     */
+    public function publish(string $channel, string $message): bool|int|Redis
+    {
+        return $this->redis->publish($this->redis_website_prefix . $channel, $message);
+    }
+
 }
