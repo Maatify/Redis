@@ -64,7 +64,7 @@ class RedisHandler
         return $this->redis->flushAll();
     }
 
-    public function Delete($keys)
+    public function Delete(array $keys)
     {
         $delete_keys = array();
         foreach ($keys as $key) {
