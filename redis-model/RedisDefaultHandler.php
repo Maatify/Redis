@@ -37,6 +37,8 @@ class RedisDefaultHandler extends RedisHandler
 
     /**
      * @param   string  $redis_website_prefix
+     *
+     * @throws RedisException
      */
     public function __construct(string $redis_website_prefix)
     {

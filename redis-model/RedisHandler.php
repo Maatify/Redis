@@ -9,8 +9,6 @@
 
 namespace Maatify\Redis;
 
-use Maatify\Json\Json;
-use Maatify\Logger\Logger;
 use Redis;
 use RedisException;
 
