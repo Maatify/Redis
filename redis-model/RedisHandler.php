@@ -89,6 +89,20 @@ class RedisHandler
         return $this->redis->unlink($delete_keys);
     }
 
+    public function unlinkPrefixStartWith(string $key): bool|Redis
+    {
+        $it = NULL;
+        $keys = [];
+
+        while ($keysChunk = $this->redis->scan($it, $this->redis_website_prefix . $key . '*')) {
+            $keys = array_merge($keys, $keysChunk);
+        }
+        if (!empty($keys)) {
+            return $this->redis->unlink($keys);
+        }
+        return false;
+    }
+
     /**
      * @throws RedisException
      */
