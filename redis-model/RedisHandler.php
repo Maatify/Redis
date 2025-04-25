@@ -40,7 +40,7 @@ class RedisHandler
         $this->redis->select($redis_database); // Use database 0
     }
 
-    public function Redis(): \Redis
+    public function Redis(): Redis
     {
         return $this->redis;
     }
@@ -48,9 +48,9 @@ class RedisHandler
     /**
      * @throws RedisException
      */
-    public function Set(string $key, $value): void
+    public function Set(string $key, $value, ?int $expiry = null): void
     {
-        $this->redis->set($this->redis_website_prefix . $key, $value, ['ex' => $this->redis_expiry]);
+        $this->redis->set($this->redis_website_prefix . $key, $value, ['ex' => $expiry ? : $this->redis_expiry]);
     }
 
     /**
